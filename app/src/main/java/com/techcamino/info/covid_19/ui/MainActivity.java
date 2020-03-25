@@ -8,8 +8,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -17,6 +20,7 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,11 +38,16 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
+import com.otaliastudios.autocomplete.Autocomplete;
+import com.otaliastudios.autocomplete.AutocompleteCallback;
+import com.otaliastudios.autocomplete.AutocompletePresenter;
 import com.techcamino.info.covid_19.R;
 import com.techcamino.info.covid_19.details.DashboardDetails;
 import com.techcamino.info.covid_19.details.MessageDetails;
 import com.techcamino.info.covid_19.util.Constants;
 import com.techcamino.info.covid_19.util.Utility;
+import com.techcamino.info.covid_19.widgets.User;
+import com.techcamino.info.covid_19.widgets.UserPresenter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +66,8 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     private TextView infected,deaths,recovered,newCases,newDeath;
     protected ViewGroup viewGroup;
     protected Context context = this;
+
+    private Autocomplete userAutocomplete;
 
 
     @Override
@@ -115,8 +126,32 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         initChart();
 
         getWorldStat();
+        setupUserAutocomplete();
     }
 
+    private void setupUserAutocomplete() {
+        EditText edit = findViewById(R.id.country_name);
+        float elevation = 6f;
+        Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
+        AutocompletePresenter<User> presenter = new UserPresenter(this);
+        AutocompleteCallback<User> callback = new AutocompleteCallback<User>() {
+            @Override
+            public boolean onPopupItemClicked(@NonNull Editable editable, @NonNull User item) {
+                editable.clear();
+                editable.append(item.getFullname());
+                return true;
+            }
+
+            public void onPopupVisibilityChanged(boolean shown) {}
+        };
+
+        userAutocomplete = Autocomplete.<User>on(edit)
+                .with(elevation)
+                .with(backgroundDrawable)
+                .with(presenter)
+                .with(callback)
+                .build();
+    }
 
     private void getWorldStat(){
         progressDialog.show();
@@ -133,7 +168,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
                     recovered.setText(dashboardDetails.getTotalRecovered());
                     newCases.setText(dashboardDetails.getNewCases());
                     newDeath.setText(dashboardDetails.getNewDeaths());
-                    setData(5,2,dashboardDetails);
+                    setData(dashboardDetails);
                     swipeRefreshLayout.setRefreshing(false);
 
                 } else {
@@ -263,13 +298,11 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         Log.i("PieChart", "nothing selected");
     }
 
-    private void setData(int count, float range, DashboardDetails dashboardDetails) {
+    private void setData(DashboardDetails dashboardDetails) {
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
-
-        boolean found = true;
 
         entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalDeaths().replace(",","")),
                 "Deaths",
@@ -287,6 +320,22 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
                 "New Death",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
 
+        /*entries.add(new PieEntry(300,
+                "Deaths",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(200,
+                "Infected",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(100,
+                "Recovered",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(150,
+                "New Cases",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(180,
+                "New Death",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));*/
+
 
         /*for (int i = 0; i < count ; i++) {
             entries.add(new PieEntry((float) ((Math.random() * range) + range / 5),
@@ -298,18 +347,18 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
 
         dataSet.setDrawIcons(false);
 
-        dataSet.setSliceSpace(3f);
+        dataSet.setSliceSpace(0f);
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
         //if(!found)
-        if(!found)
+        /*if(!found)
         {
             entries.add(new PieEntry(1,
                     "No value",
                     getResources().getDrawable(R.drawable.ic_launcher_background)));
             chart.getLegend().setEnabled(false);
             dataSet.setDrawValues(false);
-        }
+        }*/
 
         // add a lot of colors
         ArrayList<Integer> colors = new ArrayList<>();
