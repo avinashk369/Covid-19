@@ -1,4 +1,4 @@
-package com.techcamino.info.covid_19;
+package com.techcamino.info.covid_19.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +28,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.techcamino.info.covid_19.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
