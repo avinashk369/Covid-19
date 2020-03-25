@@ -1,0 +1,116 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">#ffd300</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!--<item name="android:closeIcon">@drawable/ic_vpn_key_black_24dp</item>
+        <item name="android:searchIcon">@drawable/ic_search_black_24dp</item>-->
+
+        <!-- Edit Text Floating hint-->
+        <item name="colorControlNormal">@color/grad_start_dark</item>
+        <item name="colorControlActivated">@color/black_overlay</item>
+        <item name="colorControlHighlight">@color/grey</item>
+        <!-- /Edit Text Floating hint-->
+
+    </style>
+
+    <style name="SpinnerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- Edit Text Floating hint-->
+        <item name="colorControlNormal">@color/yellow_dark</item>
+        <item name="colorControlActivated">@color/black_overlay</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <!-- /Edit Text Floating hint-->
+
+    </style>
+
+    <style name="Theme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="Theme.SplashTheme" parent="Theme">
+        <item name="android:windowDisablePreview">true</item>
+        <!-- change colorprimarydark to reflect status bar color -->
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+
+    <style name="Bottom_Navigation" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/grad_dusk_end</item>
+        <item name="android:textColorPrimary">@color/grey</item>
+        <item name="android:textColorSecondary">@color/dark_faded</item>
+    </style>
+
+
+    <style name="AppTheme.Mytoolbar" parent="@style/ThemeOverlay.AppCompat.Dark">
+
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+
+        <!-- change textColorPrimary to reflect toolbar text color -->
+        <item name="drawerArrowStyle">@style/DrawerIcon</item>
+        <item name="fontFamily">sans-serif-condensed-medium</item>
+        <item name="actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
+    </style>
+
+    <!-- change drawerIcon to reflect drawer icon color -->
+    <style name="DrawerIcon" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/black</item>
+    </style>
+
+    <style name="MyOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/black</item>
+    </style>
+
+
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="NavigationDrawer" parent="ThemeOverlay.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/black</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="colorControlActivated">@color/faded_white</item>
+        <item name="colorControlHighlight">@color/faded_white</item>
+    </style>
+
+    <style name="ChipTextAppearance" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="fontFamily">sans-serif-condensed-medium</item>
+        <item name="android:fontFamily">sans-serif-condensed-medium</item>
+    </style>
+
+
+
+    <!-- set the rounded drawable as background to your bottom sheet -->
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottom_sheet_dialog_fragment</item>
+    </style>
+
+    <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+
+</resources>
