@@ -23,6 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fifteen"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:orientation="horizontal">
             <ImageView
                 android:layout_width="wrap_content"
@@ -51,99 +53,179 @@
 
     </androidx.cardview.widget.CardView>
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/dashboard_chart"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_below="@+id/search_nation"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/twenty"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_nation"
         android:layout_above="@+id/bottom_nav_view">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <androidx.cardview.widget.CardView
-                android:layout_width="@dimen/twenty_five"
-                android:layout_height="@dimen/twenty"
-                app:cardCornerRadius="@dimen/three"
-                app:cardElevation="5dp"
-                app:cardBackgroundColor="@color/grad_dusk_start"/>
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/twenty"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:textSize="@dimen/sixteen"
-                android:text="@string/infected"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="422,945"/>
 
-        </LinearLayout>
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/twenty">
-            <androidx.cardview.widget.CardView
-                android:layout_width="@dimen/twenty_five"
-                android:layout_height="@dimen/twenty"
-                app:cardCornerRadius="@dimen/three"
-                app:cardElevation="5dp"
-                app:cardBackgroundColor="@color/grad_dusk_end"/>
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/twenty"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:textSize="@dimen/sixteen"
-                android:text="@string/mortality"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="18,907"/>
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/dashboard_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"/>
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/twenty">
-            <androidx.cardview.widget.CardView
-                android:layout_width="@dimen/twenty_five"
-                android:layout_height="@dimen/twenty"
-                app:cardCornerRadius="@dimen/three"
-                app:cardElevation="5dp"
-                app:cardBackgroundColor="@color/green"/>
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/twenty"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:textSize="@dimen/sixteen"
-                android:text="@string/recovered"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="109,102"/>
+                <LinearLayout
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="@dimen/twenty"
+                    android:layout_below="@+id/dashboard_chart">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="@dimen/twenty_five"
+                            android:layout_height="@dimen/twenty"
+                            app:cardCornerRadius="@dimen/three"
+                            app:cardElevation="5dp"
+                            app:cardBackgroundColor="@color/grad_dusk_start"/>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/twenty"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/sixteen"
+                            android:text="@string/infected"/>
+                        <TextView
+                            android:id="@+id/total_infected"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium" />
 
-        </LinearLayout>
-    </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/twenty">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="@dimen/twenty_five"
+                            android:layout_height="@dimen/twenty"
+                            app:cardCornerRadius="@dimen/three"
+                            app:cardElevation="5dp"
+                            app:cardBackgroundColor="@color/grad_dusk_end"/>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/twenty"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/sixteen"
+                            android:text="@string/mortality"/>
+                        <TextView
+                            android:id="@+id/total_deaths"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/twenty">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="@dimen/twenty_five"
+                            android:layout_height="@dimen/twenty"
+                            app:cardCornerRadius="@dimen/three"
+                            app:cardElevation="5dp"
+                            app:cardBackgroundColor="@color/green"/>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/twenty"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/sixteen"
+                            android:text="@string/recovered"/>
+                        <TextView
+                            android:id="@+id/total_recovered"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/twenty">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="@dimen/twenty_five"
+                            android:layout_height="@dimen/twenty"
+                            app:cardCornerRadius="@dimen/three"
+                            app:cardElevation="5dp"
+                            app:cardBackgroundColor="@color/yellow_dark"/>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/twenty"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/sixteen"
+                            android:text="@string/new_cases"/>
+                        <TextView
+                            android:id="@+id/new_cases"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="@dimen/twenty">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="@dimen/twenty_five"
+                            android:layout_height="@dimen/twenty"
+                            app:cardCornerRadius="@dimen/three"
+                            app:cardElevation="5dp"
+                            app:cardBackgroundColor="@color/red"/>
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/twenty"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/sixteen"
+                            android:text="@string/new_deaths"/>
+                        <TextView
+                            android:id="@+id/new_death"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+
+
+        </ScrollView>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_view"

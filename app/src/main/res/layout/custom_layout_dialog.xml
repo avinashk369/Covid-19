@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/red">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/ic_notifications_black_24dp" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/custom_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/twenty"
+            android:text="Password has been changed successfully!"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/ten"
+            android:gravity="center">
+            <androidx.cardview.widget.CardView
+
+                android:id="@+id/button_ok"
+                android:layout_width="@dimen/hundred_two"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/thirty"
+                android:layout_marginTop="@dimen/twenty"
+                android:layout_marginLeft="@dimen/radius"
+                app:cardElevation="5dp"
+                app:cardBackgroundColor="@color/red">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/dismiss"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textSize="@dimen/text_italic"/>
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

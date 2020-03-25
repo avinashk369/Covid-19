@@ -3,17 +3,22 @@ package com.techcamino.info.covid_19.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -28,18 +33,31 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 import com.techcamino.info.covid_19.R;
+import com.techcamino.info.covid_19.details.DashboardDetails;
+import com.techcamino.info.covid_19.details.MessageDetails;
+import com.techcamino.info.covid_19.util.Constants;
+import com.techcamino.info.covid_19.util.Utility;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements OnChartValueSelectedListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends BaseActivity implements OnChartValueSelectedListener {
 
     private PieChart chart;
     private int[] MY_COLORS;
     private BottomNavigationView bottomNavigationView;
-    private Context context = this;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView infected,deaths,recovered,newCases,newDeath;
+    protected ViewGroup viewGroup;
+    protected Context context = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +67,45 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         MY_COLORS = new int[]{
                 getResources().getColor(R.color.grad_dusk_end),
                 getResources().getColor(R.color.grad_dusk_start),
-                getResources().getColor(R.color.green)
+                getResources().getColor(R.color.green),
+                getResources().getColor(R.color.yellow_dark),
+                getResources().getColor(R.color.red)
         };
-
+        viewGroup = findViewById(android.R.id.content);
+        progressDialog = Utility.getProgressDialog(context,viewGroup, Constants.PLEASE_WAIT);
         bottomNavigationView = findViewById(R.id.bottom_nav_view);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        infected  =findViewById(R.id.total_infected);
+        deaths = findViewById(R.id.total_deaths);
+        recovered = findViewById(R.id.total_recovered);
+        newCases = findViewById(R.id.new_cases);
+        newDeath = findViewById(R.id.new_death);
+
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                //Toast.makeText(getApplicationContext(), "Works!", Toast.LENGTH_LONG).show();
+                getWorldStat();
+                /*// To keep animation for 3 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        // Stop animation (This will be after 3 seconds)
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 3000);*/
+            }
+        });
+
+        // Scheme colors for animation
+        swipeRefreshLayout.setColorSchemeColors(
+                getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_red_light)
+        );
 
     }
 
@@ -61,7 +113,50 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
     protected void onStart() {
         super.onStart();
         initChart();
-        setData(3,2);
+
+        getWorldStat();
+    }
+
+
+    private void getWorldStat(){
+        progressDialog.show();
+        Call<DashboardDetails> call = apiService.getDashboardDetails();
+        call.enqueue(new Callback<DashboardDetails>() {
+            @Override
+            public void onResponse(Call<DashboardDetails> call, Response<DashboardDetails> response) {
+                if (response.isSuccessful()) {
+
+                    DashboardDetails dashboardDetails = new DashboardDetails();
+                    dashboardDetails = response.body();
+                    infected.setText(dashboardDetails.getTotalCases());
+                    deaths.setText(dashboardDetails.getTotalDeaths());
+                    recovered.setText(dashboardDetails.getTotalRecovered());
+                    newCases.setText(dashboardDetails.getNewCases());
+                    newDeath.setText(dashboardDetails.getNewDeaths());
+                    setData(5,2,dashboardDetails);
+                    swipeRefreshLayout.setRefreshing(false);
+
+                } else {
+                    try {
+                        MessageDetails messageDetails = new MessageDetails();
+                        Gson gson = new Gson();
+                        messageDetails=gson.fromJson(response.errorBody().charStream(),MessageDetails.class);
+                        Log.d("Avinash", messageDetails.getMessage());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<DashboardDetails> call, Throwable t) {
+                Log.d("Failure", t.getMessage().toString());
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+        });
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -168,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
         Log.i("PieChart", "nothing selected");
     }
 
-    private void setData(int count, float range) {
+    private void setData(int count, float range, DashboardDetails dashboardDetails) {
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
@@ -176,16 +271,21 @@ public class MainActivity extends AppCompatActivity implements OnChartValueSelec
 
         boolean found = true;
 
-            entries.add(new PieEntry(40,
-                    "Deaths",
-                    getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(300,
+        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalDeaths().replace(",","")),
+                "Deaths",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalCases().replace(",","")),
                 "Infected",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
-            entries.add(new PieEntry(170,
-                    "Recovered",
-                    getResources().getDrawable(R.drawable.ic_launcher_background)));
-
+        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalRecovered().replace(",","")),
+                "Recovered",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getNewCases().replace(",","")),
+                "New Cases",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
+        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getNewDeaths().replace(",","")),
+                "New Death",
+                getResources().getDrawable(R.drawable.ic_launcher_background)));
 
 
         /*for (int i = 0; i < count ; i++) {

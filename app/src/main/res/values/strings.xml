@@ -10,4 +10,9 @@
     <string name="help">Help</string>
     <string name="trending">Trending</string>
     <string name="news">News</string>
+    <string name="quote">#Stayhome</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="settings_file_name">com.techcamino.info.covid.services.temp</string>
+    <string name="new_cases">New cases</string>
+    <string name="new_deaths">New deaths</string>
 </resources>
