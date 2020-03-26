@@ -128,7 +128,8 @@
                             android:id="@+id/total_infected"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed-medium" />
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="0"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -155,7 +156,8 @@
                             android:id="@+id/total_deaths"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed-medium" />
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="0"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -182,7 +184,8 @@
                             android:id="@+id/total_recovered"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed-medium" />
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="0"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -209,7 +212,8 @@
                             android:id="@+id/new_cases"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed-medium" />
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="0"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -236,7 +240,8 @@
                             android:id="@+id/new_death"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed-medium" />
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="0"/>
 
                     </LinearLayout>
                 </LinearLayout>
@@ -249,10 +254,6 @@
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_view"

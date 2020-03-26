@@ -17,7 +17,7 @@ import com.techcamino.info.covid_19.util.Utility;
 public class BaseActivity extends AppCompatActivity {
 
     protected APIInterFace apiService;
-    protected AlertDialog progressDialog;
+    protected AlertDialog progressDialog,dialog;
 
     @Override
     protected void onStart() {

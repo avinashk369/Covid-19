@@ -2,9 +2,12 @@ package com.techcamino.info.covid_19.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -20,8 +23,11 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +50,8 @@ import com.otaliastudios.autocomplete.Autocomplete;
 import com.otaliastudios.autocomplete.AutocompleteCallback;
 import com.otaliastudios.autocomplete.AutocompletePresenter;
 import com.techcamino.info.covid_19.R;
+import com.techcamino.info.covid_19.details.CountryDetails;
+import com.techcamino.info.covid_19.details.CountryStatsDetails;
 import com.techcamino.info.covid_19.details.DashboardDetails;
 import com.techcamino.info.covid_19.details.MessageDetails;
 import com.techcamino.info.covid_19.util.Constants;
@@ -51,6 +59,8 @@ import com.techcamino.info.covid_19.util.Utility;
 import com.techcamino.info.covid_19.widgets.User;
 import com.techcamino.info.covid_19.widgets.UserPresenter;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
@@ -71,6 +81,9 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
 
     private Autocomplete userAutocomplete;
     private MaterialSearchBar searchBar;
+    private boolean search = false;
+    private String countryName="";
+    private EditText edit;
 
 
     @Override
@@ -103,7 +116,10 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
             public void onRefresh() {
 
                 //Toast.makeText(getApplicationContext(), "Works!", Toast.LENGTH_LONG).show();
-                getWorldStat();
+                if(search)
+                    getCountryStat(countryName);
+                else
+                    getWorldStat();
                 /*// To keep animation for 3 seconds
                 new Handler().postDelayed(new Runnable() {
                     @Override public void run() {
@@ -128,10 +144,12 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     protected void onStart() {
         super.onStart();
         initChart();
-
+        //User.castJson();
         getWorldStat();
         //setupMaterialSearchbar();
         setupUserAutocomplete();
+        edit.setText("");
+        edit.clearFocus();
     }
 
     private void setupMaterialSearchbar(){
@@ -143,7 +161,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    Log.d("TextChanged",charSequence.toString());
+                Log.d("TextChanged",charSequence.toString());
             }
 
             @Override
@@ -154,27 +172,91 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     }
 
     private void setupUserAutocomplete() {
-        EditText edit = findViewById(R.id.country_name);
+        edit = findViewById(R.id.country_name);
+
         float elevation = 6f;
         Drawable backgroundDrawable = new ColorDrawable(Color.WHITE);
-        AutocompletePresenter<User> presenter = new UserPresenter(this);
-        AutocompleteCallback<User> callback = new AutocompleteCallback<User>() {
+        AutocompletePresenter<CountryDetails> presenter = new UserPresenter(this);
+        AutocompleteCallback<CountryDetails> callback = new AutocompleteCallback<CountryDetails>() {
             @Override
-            public boolean onPopupItemClicked(@NonNull Editable editable, @NonNull User item) {
+            public boolean onPopupItemClicked(@NonNull Editable editable, @NonNull CountryDetails item) {
                 editable.clear();
-                editable.append(item.getFullname());
+                editable.append(item.getName());
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                search = true;
+                countryName = item.getName();
+                getCountryStat(item.getName());
+
                 return true;
             }
 
             public void onPopupVisibilityChanged(boolean shown) {}
         };
 
-        userAutocomplete = Autocomplete.<User>on(edit)
+        userAutocomplete = Autocomplete.<CountryDetails>on(edit)
                 .with(elevation)
                 .with(backgroundDrawable)
                 .with(presenter)
                 .with(callback)
                 .build();
+    }
+
+    private void getCountryStat(String countryName){
+        progressDialog.show();
+        Call<CountryStatsDetails> call = apiService.getCountryStats(countryName);
+        call.enqueue(new Callback<CountryStatsDetails>() {
+            @Override
+            public void onResponse(Call<CountryStatsDetails> call, Response<CountryStatsDetails> response) {
+                if (response.isSuccessful()) {
+
+                    CountryStatsDetails countryStatsDetails = new CountryStatsDetails();
+                    countryStatsDetails = response.body();
+                    if(countryStatsDetails.getLatestStat().size()>0) {
+                        setLegend(countryStatsDetails.getLatestStat().get(0));
+                        setData(countryStatsDetails.getLatestStat().get(0));
+                    }else {
+                        noDataDialog(getString(R.string.no_data));
+                    }
+                    swipeRefreshLayout.setRefreshing(false);
+
+                } else {
+                    try {
+                        MessageDetails messageDetails = new MessageDetails();
+                        Gson gson = new Gson();
+                        messageDetails=gson.fromJson(response.errorBody().charStream(),MessageDetails.class);
+                        Log.d("Avinash", messageDetails.getMessage());
+                        noDataDialog(getString(R.string.no_data));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<CountryStatsDetails> call, Throwable t) {
+                Log.d("Failure", t.getMessage().toString());
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void noDataDialog(String msg){
+        dialog = Utility.getCustomDialog(context, viewGroup, msg);
+        dialog.show();
+        CardView ok = dialog.findViewById(R.id.button_ok);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dialog.isShowing())
+                    dialog.dismiss();
+                edit.setText("");
+                edit.clearFocus();
+            }
+        });
     }
 
     private void getWorldStat(){
@@ -187,11 +269,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
 
                     DashboardDetails dashboardDetails = new DashboardDetails();
                     dashboardDetails = response.body();
-                    infected.setText(dashboardDetails.getTotalCases());
-                    deaths.setText(dashboardDetails.getTotalDeaths());
-                    recovered.setText(dashboardDetails.getTotalRecovered());
-                    newCases.setText(dashboardDetails.getNewCases());
-                    newDeath.setText(dashboardDetails.getNewDeaths());
+                    setLegend(dashboardDetails);
                     setData(dashboardDetails);
                     swipeRefreshLayout.setRefreshing(false);
 
@@ -204,6 +282,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    noDataDialog(getString(R.string.no_data));
                 }
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
@@ -218,6 +297,13 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         });
     }
 
+    private void setLegend(DashboardDetails dashboardDetails){
+        infected.setText((dashboardDetails.getTotalCases().equalsIgnoreCase("") ? "0" : dashboardDetails.getTotalCases()));
+        deaths.setText((dashboardDetails.getTotalDeaths().equalsIgnoreCase("")) ? "0" : dashboardDetails.getTotalDeaths());
+        recovered.setText((dashboardDetails.getTotalRecovered().equalsIgnoreCase("")) ? "0" : dashboardDetails.getTotalRecovered());
+        newCases.setText((dashboardDetails.getNewCases().equalsIgnoreCase("")) ? "0" : dashboardDetails.getNewCases());
+        newDeath.setText((dashboardDetails.getNewDeaths().equalsIgnoreCase("")) ? "0" : dashboardDetails.getNewDeaths());
+    }
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -322,50 +408,29 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         Log.i("PieChart", "nothing selected");
     }
 
+
     private void setData(DashboardDetails dashboardDetails) {
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
 
-        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalDeaths().replace(",","")),
+        entries.add(new PieEntry(stringToint(dashboardDetails.getTotalDeaths()),
                 "Deaths",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalCases().replace(",","")),
+        entries.add(new PieEntry(stringToint(dashboardDetails.getTotalCases()),
                 "Infected",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getTotalRecovered().replace(",","")),
+        entries.add(new PieEntry(stringToint(dashboardDetails.getTotalRecovered()),
                 "Recovered",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getNewCases().replace(",","")),
+        entries.add(new PieEntry(stringToint(dashboardDetails.getNewCases()),
                 "New Cases",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(Integer.valueOf(dashboardDetails.getNewDeaths().replace(",","")),
+        entries.add(new PieEntry(stringToint(dashboardDetails.getNewDeaths()),
                 "New Death",
                 getResources().getDrawable(R.drawable.ic_launcher_background)));
 
-        /*entries.add(new PieEntry(300,
-                "Deaths",
-                getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(200,
-                "Infected",
-                getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(100,
-                "Recovered",
-                getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(150,
-                "New Cases",
-                getResources().getDrawable(R.drawable.ic_launcher_background)));
-        entries.add(new PieEntry(180,
-                "New Death",
-                getResources().getDrawable(R.drawable.ic_launcher_background)));*/
-
-
-        /*for (int i = 0; i < count ; i++) {
-            entries.add(new PieEntry((float) ((Math.random() * range) + range / 5),
-                    levels.get(i),
-                    getResources().getDrawable(R.drawable.star)));
-        }*/
 
         PieDataSet dataSet = new PieDataSet(entries, null);
 
@@ -374,16 +439,6 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         dataSet.setSliceSpace(0f);
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
-        //if(!found)
-        /*if(!found)
-        {
-            entries.add(new PieEntry(1,
-                    "No value",
-                    getResources().getDrawable(R.drawable.ic_launcher_background)));
-            chart.getLegend().setEnabled(false);
-            dataSet.setDrawValues(false);
-        }*/
-
         // add a lot of colors
         ArrayList<Integer> colors = new ArrayList<>();
 
@@ -410,4 +465,16 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
 
         chart.invalidate();
     }
+
+    private int stringToint(String strNumber){
+        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+        Number number = 0;
+        try {
+            number = format.parse(strNumber);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return number.intValue();
+    }
+
 }

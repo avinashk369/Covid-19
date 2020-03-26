@@ -15,4 +15,5 @@
     <string name="settings_file_name">com.techcamino.info.covid.services.temp</string>
     <string name="new_cases">New cases</string>
     <string name="new_deaths">New deaths</string>
+    <string name="no_data">No data found!</string>
 </resources>

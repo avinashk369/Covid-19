@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.otaliastudios.autocomplete.RecyclerViewPresenter;
 import com.techcamino.info.covid_19.R;
+import com.techcamino.info.covid_19.details.CountryDetails;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class UserPresenter extends RecyclerViewPresenter<User> {
+public class UserPresenter extends RecyclerViewPresenter<CountryDetails> {
 
     @SuppressWarnings("WeakerAccess")
     protected Adapter adapter;
@@ -48,14 +48,14 @@ public class UserPresenter extends RecyclerViewPresenter<User> {
 
     @Override
     protected void onQuery(@Nullable CharSequence query) {
-        List<User> all = User.USERS;
+        ArrayList<CountryDetails> all = User.generateCountries();
         if (TextUtils.isEmpty(query)) {
             adapter.setData(all);
         } else {
             query = query.toString().toLowerCase();
-            List<User> list = new ArrayList<>();
-            for (User u : all) {
-                if (u.getFullname().toLowerCase().contains(query)) {
+            ArrayList<CountryDetails> list = new ArrayList<>();
+            for (CountryDetails u : all) {
+                if (u.getName().toLowerCase().contains(query)) {
                     list.add(u);
                 }
             }
@@ -67,7 +67,7 @@ public class UserPresenter extends RecyclerViewPresenter<User> {
 
     protected class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
 
-        private List<User> data;
+        private ArrayList<CountryDetails> data;
 
         @SuppressWarnings("WeakerAccess")
         protected class Holder extends RecyclerView.ViewHolder {
@@ -82,7 +82,7 @@ public class UserPresenter extends RecyclerViewPresenter<User> {
         }
 
         @SuppressWarnings("WeakerAccess")
-        protected void setData(@Nullable List<User> data) {
+        protected void setData(@Nullable ArrayList<CountryDetails> data) {
             this.data = data;
         }
 
@@ -109,8 +109,8 @@ public class UserPresenter extends RecyclerViewPresenter<User> {
                 holder.root.setOnClickListener(null);
                 return;
             }
-            final User user = data.get(position);
-            holder.fullname.setText(user.getFullname());
+            final CountryDetails user = data.get(position);
+            holder.fullname.setText(user.getName());
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
