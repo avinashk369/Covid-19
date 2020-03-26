@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.techcamino.info.covid_19.R;
 import com.techcamino.info.covid_19.resoursec.APIClient;
@@ -18,6 +19,13 @@ public class BaseActivity extends AppCompatActivity {
 
     protected APIInterFace apiService;
     protected AlertDialog progressDialog,dialog;
+
+    protected void initToolbar(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+
+    }
 
     @Override
     protected void onStart() {

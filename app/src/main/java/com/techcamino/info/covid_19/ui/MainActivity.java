@@ -9,6 +9,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -314,6 +315,9 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
                     return true;
 
                 case R.id.navigation_trending:
+                    Intent twitter = new Intent(context, TwitterActivity
+                            .class);
+                    startActivity(twitter);
                     return true;
 
                 case R.id.navigation_help:
