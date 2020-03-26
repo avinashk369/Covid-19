@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
@@ -38,6 +39,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.otaliastudios.autocomplete.Autocomplete;
 import com.otaliastudios.autocomplete.AutocompleteCallback;
 import com.otaliastudios.autocomplete.AutocompletePresenter;
@@ -68,6 +70,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     protected Context context = this;
 
     private Autocomplete userAutocomplete;
+    private MaterialSearchBar searchBar;
 
 
     @Override
@@ -91,6 +94,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         recovered = findViewById(R.id.total_recovered);
         newCases = findViewById(R.id.new_cases);
         newDeath = findViewById(R.id.new_death);
+        //searchBar = findViewById(R.id.searchBar);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -126,7 +130,27 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         initChart();
 
         getWorldStat();
+        //setupMaterialSearchbar();
         setupUserAutocomplete();
+    }
+
+    private void setupMaterialSearchbar(){
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    Log.d("TextChanged",charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private void setupUserAutocomplete() {

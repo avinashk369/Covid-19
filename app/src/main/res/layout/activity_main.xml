@@ -7,6 +7,33 @@
     android:background="@color/white"
     tools:context=".ui.MainActivity">
 
+    <!--<androidx.cardview.widget.CardView
+        android:id="@+id/search_nation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:cardCornerRadius="30dp"
+        android:layout_marginLeft="@dimen/ten"
+        android:layout_marginRight="@dimen/ten"
+        android:layout_marginBottom="@dimen/ten"
+        android:layout_marginTop="@dimen/twenty"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="@color/white">
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:id="@+id/searchBar"
+            style="@style/MaterialSearchBarLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingEnd="@dimen/thirteen"
+            android:paddingStart="@dimen/thirteen"
+            app:mt_navIconEnabled="false"
+            app:mt_speechMode="false"
+            app:mt_hint="@string/search"
+            app:mt_placeholder="@string/search" />
+
+
+    </androidx.cardview.widget.CardView>-->
     <androidx.cardview.widget.CardView
         android:id="@+id/search_nation"
         android:layout_width="match_parent"

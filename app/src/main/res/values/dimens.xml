@@ -44,4 +44,5 @@
     <dimen name="value">14sp</dimen>
     <dimen name="hundred_twenty">120dp</dimen>
     <dimen name="sixteen">16dp</dimen>
+    <dimen name="thirteen">13dp</dimen>
 </resources>
