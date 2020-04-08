@@ -1,24 +1,16 @@
 package com.techcamino.info.covid_19.ui;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
@@ -30,7 +22,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -45,8 +40,8 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
-import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.otaliastudios.autocomplete.Autocomplete;
 import com.otaliastudios.autocomplete.AutocompleteCallback;
 import com.otaliastudios.autocomplete.AutocompletePresenter;
@@ -57,7 +52,6 @@ import com.techcamino.info.covid_19.details.DashboardDetails;
 import com.techcamino.info.covid_19.details.MessageDetails;
 import com.techcamino.info.covid_19.util.Constants;
 import com.techcamino.info.covid_19.util.Utility;
-import com.techcamino.info.covid_19.widgets.User;
 import com.techcamino.info.covid_19.widgets.UserPresenter;
 
 import java.text.NumberFormat;
@@ -81,11 +75,10 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     protected Context context = this;
 
     private Autocomplete userAutocomplete;
-    private MaterialSearchBar searchBar;
     private boolean search = false;
     private String countryName="";
     private EditText edit;
-
+    private TextView updatedOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +101,7 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         recovered = findViewById(R.id.total_recovered);
         newCases = findViewById(R.id.new_cases);
         newDeath = findViewById(R.id.new_death);
-        //searchBar = findViewById(R.id.searchBar);
+        updatedOn = findViewById(R.id.updated_on);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -151,25 +144,6 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         setupUserAutocomplete();
         edit.setText("");
         edit.clearFocus();
-    }
-
-    private void setupMaterialSearchbar(){
-        searchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d("TextChanged",charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
     }
 
     private void setupUserAutocomplete() {
@@ -299,6 +273,8 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
     }
 
     private void setLegend(DashboardDetails dashboardDetails){
+
+        updatedOn.setText((dashboardDetails.getStatsTakenAt()==null) ? dashboardDetails.getRecordDate().split("\\.")[0] : dashboardDetails.getStatsTakenAt());
         infected.setText((dashboardDetails.getTotalCases().equalsIgnoreCase("") ? "0" : dashboardDetails.getTotalCases()));
         deaths.setText((dashboardDetails.getTotalDeaths().equalsIgnoreCase("")) ? "0" : dashboardDetails.getTotalDeaths());
         recovered.setText((dashboardDetails.getTotalRecovered().equalsIgnoreCase("")) ? "0" : dashboardDetails.getTotalRecovered());
@@ -312,6 +288,9 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_news:
+                    Intent news = new Intent(context, NewsActivity
+                            .class);
+                    startActivity(news);
                     return true;
 
                 case R.id.navigation_trending:
@@ -320,12 +299,33 @@ public class MainActivity extends BaseActivity implements OnChartValueSelectedLi
                     startActivity(twitter);
                     return true;
 
-                case R.id.navigation_help:
+                case R.id.navigation_protect:
+                    showHelpSheet();
                     return true;
             }
             return false;
         }
     };
+
+    private void showHelpSheet(){
+        View dialogView = getLayoutInflater().inflate(R.layout.help_bottom_sheet, null);
+        final BottomSheetDialog dialog = new BottomSheetDialog(context,R.style.BottomSheetDialogTheme);
+
+        dialog.setCancelable(true);
+        dialog.setContentView(dialogView);
+        dialog.show();
+        LinearLayout changePassword = dialog.findViewById(R.id.change_password);
+        changePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context,FaqActivity.class));
+                dialog.dismiss();
+            }
+        });
+
+
+
+    }
 
     public void initChart(){
         chart = findViewById(R.id.dashboard_chart);

@@ -1,6 +1,8 @@
 package com.techcamino.info.covid_19.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -8,38 +10,42 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.gson.Gson;
 import com.techcamino.info.covid_19.R;
-import com.techcamino.info.covid_19.adapter.TweetsAdapter;
+import com.techcamino.info.covid_19.adapter.NewsAdapter;
+import com.techcamino.info.covid_19.details.ArticleDetails;
 import com.techcamino.info.covid_19.details.MessageDetails;
-import com.techcamino.info.covid_19.details.TweetsDetails;
 import com.techcamino.info.covid_19.util.Constants;
+import com.techcamino.info.covid_19.util.DividerItemDecorator;
 import com.techcamino.info.covid_19.util.Utility;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.techcamino.info.covid_19.util.Constants.TWITTER_COUNT;
-import static com.techcamino.info.covid_19.util.Constants.TWITTER_RESULT_TYPE;
-import static com.techcamino.info.covid_19.util.Constants.TWITTER_SEARCH;
+import static com.techcamino.info.covid_19.util.Constants.COUNTRY;
+import static com.techcamino.info.covid_19.util.Constants.NEWS_API_KEY;
 
-public class TwitterActivity extends BaseActivity implements TweetsAdapter.PlaceInfoListener {
+public class NewsActivity extends BaseActivity implements NewsAdapter.PlaceInfoListener {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     protected ViewGroup viewGroup;
     protected Context context = this;
-    private RecyclerView tweetsList;
+    private RecyclerView newsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_twitter);
+        setContentView(R.layout.activity_news);
+
         initToolbar();
+
         try{
+            toolbar.setBackgroundResource(R.drawable.toolbar_background_news);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         }
@@ -48,25 +54,15 @@ public class TwitterActivity extends BaseActivity implements TweetsAdapter.Place
         }
 
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-        tweetsList = findViewById(R.id.top_tweets);
+        newsList = findViewById(R.id.top_news);
         viewGroup = findViewById(android.R.id.content);
         progressDialog = Utility.getProgressDialog(context,viewGroup, Constants.PLEASE_WAIT);
-
-
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
-                //Toast.makeText(getApplicationContext(), "Works!", Toast.LENGTH_LONG).show();
-                getLatestTweets(TWITTER_SEARCH,TWITTER_RESULT_TYPE,TWITTER_COUNT);
-                /*// To keep animation for 3 seconds
-                new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
-                        // Stop animation (This will be after 3 seconds)
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 3000);*/
+                getNews(COUNTRY,NEWS_API_KEY);
             }
         });
 
@@ -83,23 +79,24 @@ public class TwitterActivity extends BaseActivity implements TweetsAdapter.Place
     @Override
     protected void onStart() {
         super.onStart();
-        getLatestTweets(TWITTER_SEARCH,TWITTER_RESULT_TYPE,TWITTER_COUNT);
+        getNews(COUNTRY,NEWS_API_KEY);
     }
 
-    private void getLatestTweets(String query,String restype,int count){
+    private void getNews(String country,String apiKey){
         progressDialog.show();
-        Call<TweetsDetails> call = apiService.getTweets(query,restype,count);
-        call.enqueue(new Callback<TweetsDetails>() {
+        Call<ArticleDetails> call = apiService.getNews(country,apiKey);
+        call.enqueue(new Callback<ArticleDetails>() {
             @Override
-            public void onResponse(Call<TweetsDetails> call, Response<TweetsDetails> response) {
+            public void onResponse(Call<ArticleDetails> call, Response<ArticleDetails> response) {
                 if (response.isSuccessful()) {
 
-                    TweetsDetails tweetsDetails = new TweetsDetails();
-                    tweetsDetails = response.body();
-                    TweetsAdapter tweetsAdapter = new TweetsAdapter(tweetsDetails.getTweetsDetailsArrayList(),context);
-                    GridLayoutManager gridLayoutManager =  new GridLayoutManager(getApplicationContext(),1, GridLayoutManager.VERTICAL,false);
-                    tweetsList.setLayoutManager(gridLayoutManager);
-                    tweetsList.setAdapter(tweetsAdapter);
+                    ArticleDetails articleDetails = new ArticleDetails();
+                    articleDetails = response.body();
+                    NewsAdapter newsAdapter = new NewsAdapter(articleDetails.getArticleDetailsArrayList(),context);
+                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(context);
+                    newsList.setLayoutManager(mLayoutManager);
+                    newsList.addItemDecoration(new DividerItemDecorator(context.getResources().getDrawable(R.drawable.divider)));
+                    newsList.setAdapter(newsAdapter);
                     swipeRefreshLayout.setRefreshing(false);
 
                 } else {
@@ -117,7 +114,7 @@ public class TwitterActivity extends BaseActivity implements TweetsAdapter.Place
             }
 
             @Override
-            public void onFailure(Call<TweetsDetails> call, Throwable t) {
+            public void onFailure(Call<ArticleDetails> call, Throwable t) {
                 Log.d("Failure", t.getMessage().toString());
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
@@ -143,7 +140,9 @@ public class TwitterActivity extends BaseActivity implements TweetsAdapter.Place
     }
 
     @Override
-    public void onPopupMenuClick(TweetsDetails tweetsDetails, View view) {
+    public void onPopupMenuClick(ArticleDetails articleDetails, View view) {
+
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(articleDetails.getUrl())));
 
     }
 }

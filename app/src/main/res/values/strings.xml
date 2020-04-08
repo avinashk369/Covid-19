@@ -16,4 +16,12 @@
     <string name="new_cases">New cases</string>
     <string name="new_deaths">New deaths</string>
     <string name="no_data">No data found!</string>
+    <string name="security">Security</string>
+    <string name="faq">FAQ</string>
+
+    <string name="app_desc">This app collects COVID-19 data from verified sources and display them.
+        \n You may also find top 100 headlines about COVID-19 from various news sources and top tweets as well.
+    </string>
+    <string name="hashtag">#stayhome #stayalert #fightagaintcovid</string>
+    <string name="updated_at">Last update :</string>
 </resources>

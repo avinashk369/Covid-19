@@ -27,6 +27,8 @@ public class DashboardDetails implements Serializable {
     @SerializedName("statistic_taken_at")
     private @Getter@Setter
     String statsTakenAt;
+    @SerializedName("record_date")
+    private @Getter@Setter String recordDate;
 
 
 }

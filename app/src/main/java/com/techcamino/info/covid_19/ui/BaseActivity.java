@@ -19,9 +19,10 @@ public class BaseActivity extends AppCompatActivity {
 
     protected APIInterFace apiService;
     protected AlertDialog progressDialog,dialog;
+    protected Toolbar toolbar;
 
     protected void initToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
 

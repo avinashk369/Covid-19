@@ -98,17 +98,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"/>
 
+
+
                 <LinearLayout
                     android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_margin="@dimen/twenty"
+                    android:layout_marginLeft="@dimen/twenty"
+                    android:layout_marginRight="@dimen/twenty"
+                    android:layout_marginTop="@dimen/ten"
+                    android:layout_marginBottom="@dimen/ten"
                     android:layout_below="@+id/dashboard_chart">
+                    <LinearLayout
+                        android:id="@+id/updated_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/updated_at"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textStyle="italic"
+                            android:textSize="@dimen/twelve"
+                            android:textColor="@color/grad_dusk_end"
+                            android:gravity="end"/>
+                        <TextView
+                            android:id="@+id/updated_on"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/ten"
+                            android:textStyle="italic"
+                            android:textColor="@color/grad_dusk_end"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textSize="@dimen/twelve"
+                            android:text="@string/app_name"/>
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/ten"
                         android:gravity="center_vertical">
                         <androidx.cardview.widget.CardView
                             android:layout_width="@dimen/twenty_five"

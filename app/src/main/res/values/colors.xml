@@ -27,6 +27,16 @@
     <color name="grad_dusk_start">#2C3E50</color>
     <color name="grad_dusk_end">#FD746C</color>
 
+    <color name="white_87">#ddffffff</color>
+    <color name="white_93">#edf8f8f8</color>
+    <color name="skyBlue">#57A8D8</color>
+
+    <color name="md_yellow_100">#FFD600</color>
+    <color name="md_yellow_200">#FBC02D</color>
+    <color name="md_amber_700">#FFA000</color>
+    <color name="md_orange_100">#FFA726</color>
+    <color name="md_orange_200">#FF6D00</color>
+
 
 
 
@@ -35,7 +45,7 @@
     <color name="faded_white">#EEEEEE</color>
     <item name="grey_faded" type="color">#C3C5C5</item>
     <color name="background">#dddddd</color>
-
+    <color name="shadow">#77BBBBBB</color>
     <integer-array name="androidcolors">
         <item>@color/green</item>
         <item>@color/yellow</item>

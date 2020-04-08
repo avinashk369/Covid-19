@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 29
@@ -25,6 +27,7 @@ android {
 
 repositories {
     maven { url 'https://jitpack.io' }
+    mavenCentral()
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -46,5 +49,15 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation "com.otaliastudios:autocomplete:1.1.0"
-    implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
+    //implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'se.akerfeldt:okhttp-signpost:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'oauth.signpost:signpost-core:1.2.1.2'
+    implementation "androidx.core:core-ktx:1.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.mindorks.android:placeholderview:1.0.3'
+    annotationProcessor 'com.mindorks.android:placeholderview-compiler:1.0.3'
+
 }

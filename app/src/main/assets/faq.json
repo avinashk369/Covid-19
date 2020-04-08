@@ -1,0 +1,26 @@
+[
+	{
+		"catergory" : "Are we officials?",
+		"data" : [
+			{
+				"title" : "NO"
+			}
+		]
+	},
+	{
+		"catergory" : "Who we are",
+		"data" : [
+			{
+				"title" : "We are group of dedicated volunteers who are curating the COVID-19 stats from verified sources."
+			}
+		]
+	},
+	{
+		"catergory" : "How this works?",
+		"data" : [
+			{
+				"title" : "This app collects COVID-19 data from verified sources and display them.\\n You may also find top 100 headlines about COVID-19 from various news sources and top tweets as well."
+			}
+		]
+	}
+]
